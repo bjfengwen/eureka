@@ -91,7 +91,7 @@ public class EurekaClientServerRestIntegrationTest {
                 eurekaServiceUrl
         );
 
-        Thread.sleep(Long.MAX_VALUE);
+         Thread.sleep(Long.MAX_VALUE);
     }
 
     @AfterClass
@@ -250,52 +250,37 @@ public class EurekaClientServerRestIntegrationTest {
     }
 
     // TODO 疑问，芋艿，临时注释，看看情况。
-//    private static void startServer() throws Exception {
-//        File warFile = findWar();
-//
-//        server = new Server(8080);
-//
-//        WebAppContext webapp = new WebAppContext();
-//        webapp.setContextPath("/");
-//        webapp.setWar(warFile.getAbsolutePath());
-//        server.setHandler(webapp);
-//
-//        server.start();
-//
-//        eurekaServiceUrl = "http://localhost:8080/v2";
-//    }
-
-//    public static final String DEFAULT_CONTEXT_PATH = "/jetty-embeded-webapp";
-    private static final String DEFAULT_APP_CONTEXT_PATH = "src/main/webapp";
-
     private static void startServer() throws Exception {
+        File warFile = findWar();
+
         server = new Server(8080);
 
-//        ServletContextHandler handler = new ServletContextHandler();
-//        handler.addEventListener(new EurekaBootStrap());
-//        handler.addFilter(ServerRequestAuthFilter.class, "/*", 1).setFilter(new ServerRequestAuthFilter());
-//        handler.addFilter(RateLimitingFilter.class, "/*", 1).setFilter(new RateLimitingFilter());
-//        ServletContainer jersey = new ServletContainer();
-//        handler.addFilter(ServletContainer.class, "/*", 1).setFilter(jersey);
-//
-//        handler.setServer(server);
-//
-//        handler.start();
-        File f = new File(Object.class.getResource("/").getPath());
-        System.out.println(f);
+        WebAppContext webapp = new WebAppContext();
+        webapp.setContextPath("/");
+        webapp.setWar(warFile.getAbsolutePath());
+        server.setHandler(webapp);
 
-        // TODO Thread.currentThread().getContextClassLoader() 获取不到路径，先暂时这样；
-        WebAppContext webAppCtx = new WebAppContext(new File("./eureka-server/src/main/webapp").getAbsolutePath(), "/");
-        webAppCtx.setDescriptor(new File("./eureka-server/src/main/webapp/WEB-INF/web.xml").getAbsolutePath());
-        webAppCtx.setResourceBase(new File("./eureka-server/src/main/resources").getAbsolutePath());
-        webAppCtx.setClassLoader(Thread.currentThread().getContextClassLoader());
-        server.setHandler(webAppCtx);
-
-//        server.setHandler(handler);
         server.start();
 
         eurekaServiceUrl = "http://localhost:8080/v2";
     }
+
+//    public static final String DEFAULT_CONTEXT_PATH = "/jetty-embeded-webapp";
+    private static final String DEFAULT_APP_CONTEXT_PATH = "src/main/webapp";
+
+//    private static void startServer() throws Exception {
+//        server = new Server(8080);
+//
+//        // TODO Thread.currentThread().getContextClassLoader() 获取不到路径，先暂时这样；
+//        WebAppContext webAppCtx = new WebAppContext(new File("./eureka-server/src/main/webapp").getAbsolutePath(), "/");
+//        webAppCtx.setDescriptor(new File("./eureka-server/src/main/webapp/WEB-INF/web.xml").getAbsolutePath());
+//        webAppCtx.setResourceBase(new File("./eureka-server/src/main/resources").getAbsolutePath());
+//        webAppCtx.setClassLoader(Thread.currentThread().getContextClassLoader());
+//        server.setHandler(webAppCtx);
+//        server.start();
+//
+//        eurekaServiceUrl = "http://localhost:8080/v2";
+//    }
 
     private static File findWar() {
         File dir = null;

@@ -17,7 +17,6 @@
 package com.netflix.eureka;
 
 import com.netflix.config.*;
-import com.netflix.eureka.aws.AwsBindingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -494,7 +493,7 @@ public class DefaultEurekaServerConfig implements EurekaServerConfig {
             if (pairSplit.length < 2) {
                 logger.error("Error reading eureka remote region urls from property {}. "
                                 + "Invalid entry {} for remote region url. The entry must contain region name and url "
-                                + "separated by a {}. Ignoring this entry.", new String[]{propName, remoteRegionUrlWithNamePair, pairSplitChar});
+                                + "separated by a {}. Ignoring this entry.",  propName, remoteRegionUrlWithNamePair, pairSplitChar );
             } else {
                 String regionName = pairSplit[0];
                 String regionUrl = pairSplit[1];
@@ -655,10 +654,7 @@ public class DefaultEurekaServerConfig implements EurekaServerConfig {
                 .get();
     }
 
-    @Override
-    public AwsBindingStrategy getBindingStrategy() {
-        return AwsBindingStrategy.valueOf(configInstance.getStringProperty(namespace + "awsBindingStrategy", AwsBindingStrategy.EIP.name()).get().toUpperCase());
-    }
+
 
     @Override
     public String getExperimental(String name) {

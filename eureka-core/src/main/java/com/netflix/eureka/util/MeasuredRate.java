@@ -57,7 +57,7 @@ public class MeasuredRate {
         this.timer = new Timer("Eureka-MeasureRateTimer", true);
         this.isActive = false;
     }
-
+    // 每一分钟将currentBucket赋值给lastBucket,同时currentBucket清空一次
     public synchronized void start() {
         if (!isActive) {
             timer.schedule(new TimerTask() {

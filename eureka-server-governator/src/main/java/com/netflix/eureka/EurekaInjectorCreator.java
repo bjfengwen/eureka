@@ -1,8 +1,6 @@
 package com.netflix.eureka;
 
 import com.netflix.discovery.guice.EurekaModule;
-import com.netflix.eureka.guice.Ec2EurekaServerModule;
-import com.netflix.eureka.guice.LocalDevEurekaServerModule;
 import com.netflix.governator.InjectorBuilder;
 import com.netflix.governator.LifecycleInjector;
 import com.netflix.governator.ProvisionDebugModule;
@@ -26,7 +24,6 @@ public class EurekaInjectorCreator {
             return InjectorBuilder
                     .fromModules(
                             new EurekaModule(),
-                            new Ec2EurekaServerModule(),
                             new ProvisionDebugModule(),
                             new JerseyServletModule() {
                                 @Override

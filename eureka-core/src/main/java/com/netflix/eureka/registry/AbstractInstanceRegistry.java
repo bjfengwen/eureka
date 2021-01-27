@@ -472,6 +472,7 @@ public abstract class AbstractInstanceRegistry implements InstanceRegistry {
                 }
             }
             // 新增 续租每分钟次数
+            //记录心跳次数 MeasuredRate中lastBucket currentBucket 每一分钟将currentBucket赋值给lastBucket,同时currentBucket清空一次
             renewsLastMin.increment();
             // 设置 租约最后更新时间（续租）
             leaseToRenew.renew();
@@ -1133,7 +1134,7 @@ public abstract class AbstractInstanceRegistry implements InstanceRegistry {
                 }
             }
 
-            // TODO 芋艿：设定版本号
+
             Applications allApps = getApplicationsFromMultipleRegions(remoteRegions);
             apps.setAppsHashCode(allApps.getReconcileHashCode());
             return apps;

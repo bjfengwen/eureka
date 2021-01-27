@@ -16,7 +16,6 @@
 
 package com.netflix.eureka;
 
-import com.netflix.eureka.aws.AwsBindingStrategy;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -776,14 +775,7 @@ public interface EurekaServerConfig {
      */
     String getXmlCodecName();
 
-    /**
-     *
-     * 跳过：AWS 使用
-     *
-     * Get the configured binding strategy EIP or Route53.
-     * @return the configured binding strategy
-     */
-    AwsBindingStrategy getBindingStrategy();
+
 
     /**
      *

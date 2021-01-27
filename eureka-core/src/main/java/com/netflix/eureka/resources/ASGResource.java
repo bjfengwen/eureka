@@ -28,8 +28,6 @@ import javax.ws.rs.core.Response;
 import com.netflix.eureka.EurekaServerContext;
 import com.netflix.eureka.EurekaServerContextHolder;
 import com.netflix.eureka.cluster.PeerEurekaNode;
-import com.netflix.eureka.aws.AwsAsgUtil;
-import com.netflix.eureka.registry.AwsInstanceRegistry;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * get refilled by an ASG - which is normal in AWS environments,the instances
  * automatically go in the {@link com.netflix.appinfo.InstanceInfo.InstanceStatus#OUT_OF_SERVICE} state when they
  * are refilled by the ASG and if the ASG is disabled by as indicated by a flag
- * in the ASG as described in {@link AwsAsgUtil#isASGEnabled}
  * </p>
  *
  * @author Karthik Ranganathan
@@ -75,16 +72,11 @@ public class ASGResource {
     }
 
     protected final PeerAwareInstanceRegistry registry;
-    protected final AwsAsgUtil awsAsgUtil;
 
     @Inject
     ASGResource(EurekaServerContext eurekaServer) {
         this.registry = eurekaServer.getRegistry();
-        if (registry instanceof AwsInstanceRegistry) {
-            this.awsAsgUtil = ((AwsInstanceRegistry) registry).getAwsAsgUtil();
-        } else {
-            this.awsAsgUtil = null;
-        }
+
     }
 
     public ASGResource() {
@@ -105,14 +97,11 @@ public class ASGResource {
     public Response statusUpdate(@PathParam("asgName") String asgName,
                                  @QueryParam("value") String newStatus,
                                  @HeaderParam(PeerEurekaNode.HEADER_REPLICATION) String isReplication) {
-        if (awsAsgUtil == null) {
-            return Response.status(400).build();
-        }
 
         try {
             logger.info("Trying to update ASG Status for ASG {} to {}", asgName, newStatus);
             ASGStatus asgStatus = ASGStatus.valueOf(newStatus.toUpperCase());
-            awsAsgUtil.setStatus(asgName, (!ASGStatus.DISABLED.equals(asgStatus)));
+
             registry.statusUpdate(asgName, asgStatus, Boolean.valueOf(isReplication));
             logger.debug("Updated ASG Status for ASG {} to {}", asgName, asgStatus);
 

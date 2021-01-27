@@ -26,10 +26,7 @@ import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.converters.JsonXStream;
 import com.netflix.discovery.converters.XmlXStream;
-import com.netflix.eureka.aws.AwsBinder;
-import com.netflix.eureka.aws.AwsBinderDelegate;
 import com.netflix.eureka.cluster.PeerEurekaNodes;
-import com.netflix.eureka.registry.AwsInstanceRegistry;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistryImpl;
 import com.netflix.eureka.resources.DefaultServerCodecs;
@@ -86,7 +83,6 @@ public class EurekaBootStrap implements ServletContextListener {
     private static final String EUREKA_DATACENTER = "eureka.datacenter";
 
     protected volatile EurekaServerContext serverContext;
-    protected volatile AwsBinder awsBinder;
     
     private EurekaClient eurekaClient;
 
@@ -189,23 +185,14 @@ public class EurekaBootStrap implements ServletContextListener {
 
         // 【2.2.5】创建 应用实例信息的注册表
         PeerAwareInstanceRegistry registry;
-        if (isAws(applicationInfoManager.getInfo())) { // AWS 相关，跳过
-            registry = new AwsInstanceRegistry(
-                    eurekaServerConfig,
-                    eurekaClient.getEurekaClientConfig(),
-                    serverCodecs,
-                    eurekaClient
-            );
-            awsBinder = new AwsBinderDelegate(eurekaServerConfig, eurekaClient.getEurekaClientConfig(), registry, applicationInfoManager);
-            awsBinder.start();
-        } else {
+
             registry = new PeerAwareInstanceRegistryImpl(
                     eurekaServerConfig,
                     eurekaClient.getEurekaClientConfig(),
                     serverCodecs,
                     eurekaClient
             );
-        }
+
 
         // 【2.2.6】创建 Eureka-Server 集群节点集合
         PeerEurekaNodes peerEurekaNodes = getPeerEurekaNodes(
@@ -280,9 +267,6 @@ public class EurekaBootStrap implements ServletContextListener {
      */
     protected void destroyEurekaServerContext() throws Exception {
         EurekaMonitors.shutdown();
-        if (awsBinder != null) {
-            awsBinder.shutdown();
-        }
         if (serverContext != null) {
             serverContext.shutdown();
         }

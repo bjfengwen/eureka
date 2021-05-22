@@ -54,6 +54,9 @@ public interface LookupService<T> {
      * @return {@link List} of {@link InstanceInfo}s or
      *         {@link java.util.Collections#emptyList()}
      */
+    /**
+     * 通过serverId获取实例
+     */
     List<InstanceInfo> getInstancesById(String id);
 
     /**
@@ -81,6 +84,9 @@ public interface LookupService<T> {
      *         host name of the next server in line to process the request based
      *         on the round-robin algorithm.
      * @throws java.lang.RuntimeException if the virtualHostname does not exist
+     */
+    /**
+     * 从下一个eureka获取实例
      */
     InstanceInfo getNextServerFromEureka(String virtualHostname, boolean secure);
 }

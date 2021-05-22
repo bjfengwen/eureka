@@ -196,8 +196,7 @@ public class DefaultEurekaServerConfig implements EurekaServerConfig {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * com.netflix.eureka.EurekaServerConfig#getPeerEurekaNodesUpdateInterval()
+     * @see com.netflix.eureka.EurekaServerConfig#getPeerEurekaNodesUpdateInterval()
      */
     @Override
     public int getPeerEurekaNodesUpdateIntervalMs() {

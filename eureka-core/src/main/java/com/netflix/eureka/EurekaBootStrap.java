@@ -104,7 +104,8 @@ public class EurekaBootStrap implements ServletContextListener {
 
     /**
      * Initializes Eureka, including syncing up with other Eureka peers and publishing the registry.
-     *
+     * 当Servlet 容器启动Web 应用时调用该方法。
+     * 对那些在Web 应用启动时就需要被初始化的Servlet 进行初始化。
      * @see
      * javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
      */
@@ -184,9 +185,7 @@ public class EurekaBootStrap implements ServletContextListener {
         }
 
         // 【2.2.5】创建 应用实例信息的注册表
-        PeerAwareInstanceRegistry registry;
-
-            registry = new PeerAwareInstanceRegistryImpl(
+        PeerAwareInstanceRegistry registry = new PeerAwareInstanceRegistryImpl(
                     eurekaServerConfig,
                     eurekaClient.getEurekaClientConfig(),
                     serverCodecs,
@@ -279,11 +278,6 @@ public class EurekaBootStrap implements ServletContextListener {
 
     }
 
-    protected boolean isAws(InstanceInfo selfInstanceInfo) {
-        boolean result = DataCenterInfo.Name.Amazon == selfInstanceInfo.getDataCenterInfo().getName();
-        logger.info("isAws returned {}", result);
-        return result;
-    }
 
     protected boolean isCloud(DeploymentContext deploymentContext) {
         logger.info("Deployment datacenter is {}", deploymentContext.getDeploymentDatacenter());

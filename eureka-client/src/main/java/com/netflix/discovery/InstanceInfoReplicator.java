@@ -128,7 +128,7 @@ class InstanceInfoReplicator implements Runnable {
         try {
             // 刷新 应用实例信息
             discoveryClient.refreshInstanceInfo();
-            // 判断 应用实例信息 是否数据不一致
+            // 判断 应用实例信息 是否数据不一致,若是，发起注册
             Long dirtyTimestamp = instanceInfo.isDirtyWithTime();
             if (dirtyTimestamp != null) {
                 // 发起注册

@@ -93,7 +93,11 @@ public class PeerEurekaNodes {
     public int getMinNumberOfAvailablePeers() {
         return serverConfig.getHealthStatusMinNumberOfAvailablePeers();
     }
-
+//    集群节点初始化：PeerEurekaNodes#start() 方法
+//    1初始化定时任务线程池
+//    2初始化集群节点信息 updatePeerEurekaNodes 方法
+//    3初始化固定周期（默认10分钟，可配置）更新集群节点信息的任务的线程
+//    4通过定时任务，线程池定时执行更新集群节点线程
     public void start() {
         // 创建 定时任务服务
         taskExecutor = Executors.newSingleThreadScheduledExecutor(
@@ -121,6 +125,12 @@ public class PeerEurekaNodes {
 
                 }
             };
+            //4、创建并执行一个在给定初始延迟后首次启用的定期操作，随后，在每一次执行终止
+            //和下一次执行开始之间都存在给定的延迟。如果任务的任一执行遇到异常，就会取
+            //消后续执行，否则，只能通过执行程序的取消或终止方法来终止该任务。
+            //参数：command（第一个参数）-要执行的任务，initialdelay（第二个参数）-首次执行的延迟时间
+            //delay（第三个参数）-一次执行终止和下一次执行开始之间的延迟，默认10分钟
+            //unit（第四个参数）-initialdelay和delay参数的时间单位，默认10分钟
             taskExecutor.scheduleWithFixedDelay(
                     peersUpdateTask,
                     serverConfig.getPeerEurekaNodesUpdateIntervalMs(),
@@ -177,6 +187,11 @@ public class PeerEurekaNodes {
      *
      * @param newPeerUrls peer node URLs; this collection should have local node's URL filtered out
      */
+//    校验传入的 URL 集合是否需要更新
+//    移除新 URL 集合中没有的旧节点并关闭节点
+//    创建旧节点集合中没有的新 URL 节点，通过 createPeerEurekaNode(peerUrl) 方法
+//    重新赋值节点集合以及节点URL集合完成节点的更新
+//    resolvePeerUrls() 方法，实际上就是解析配置文件中的 eureka.serviceUrl 前缀的配置，并动态监听配置的更新。
     protected void updatePeerEurekaNodes(List<String> newPeerUrls) {
         if (newPeerUrls.isEmpty()) {
             logger.warn("The replica size seems to be empty. Check the route 53 DNS Registry");
@@ -184,13 +199,15 @@ public class PeerEurekaNodes {
         }
 
         // 计算 新增的集群节点地址
+        //计算要删除的集群节点地址（从以前的地址中删除最新的地址信息，剩下的就是不可用的地址）
         Set<String> toShutdown = new HashSet<>(peerEurekaNodeUrls);
         toShutdown.removeAll(newPeerUrls);
 
         // 计算 删除的集群节点地址
+        // 计算要新增的集群节点地址（从最新的地址中删除以前的地址信息，剩下的就是新增的地址）
         Set<String> toAdd = new HashSet<>(newPeerUrls);
         toAdd.removeAll(peerEurekaNodeUrls);
-
+        //如果这两个集合都为空，说明前后地址信息一致，既没有新增也没有删除，不需要更新直接返回
         if (toShutdown.isEmpty() && toAdd.isEmpty()) { // No change
             return;
         }
@@ -225,7 +242,10 @@ public class PeerEurekaNodes {
         this.peerEurekaNodes = newNodeList;
         this.peerEurekaNodeUrls = new HashSet<>(newPeerUrls);
     }
-
+    //创建节点信息
+    //updatePeerEurekaNodes(resolvePeerUrls()) 方法传入的新 URL 集合，
+    //是通过resolvePeerUrls() 方法获取，这个方法实际上就是解析配置文件中的
+    //eureka.serviceUrl 前缀的配置，并动态监听配置的更新。
     protected PeerEurekaNode createPeerEurekaNode(String peerEurekaNodeUrl) {
         HttpReplicationClient replicationClient = JerseyReplicationClient.createReplicationClient(serverConfig, serverCodecs, peerEurekaNodeUrl);
         String targetHost = hostFromUrl(peerEurekaNodeUrl);

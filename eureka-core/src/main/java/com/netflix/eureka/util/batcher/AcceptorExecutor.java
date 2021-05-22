@@ -355,7 +355,7 @@ class AcceptorExecutor<ID, T> {
         }
 
         void assignBatchWork() {
-            if (hasEnoughTasksForNextBatch()) {
+            if (hasEnoughTasksForNextBatch()) {//判断是否有足够任务进行下一次批量任务调度
                 // 获取 批量任务工作请求信号量
                 if (batchWorkRequests.tryAcquire(1)) {
                     // 获取批量任务
@@ -393,6 +393,7 @@ class AcceptorExecutor<ID, T> {
             }
 
             // 到达批量任务处理最大等待延迟( 通过待处理队列的头部任务判断 )
+            //processingOrder.peek()：检索但不删除此列表的头部（第一个元素）
             TaskHolder<ID, T> nextHolder = pendingTasks.get(processingOrder.peek());
             long delay = System.currentTimeMillis() - nextHolder.getSubmitTimestamp();
             return delay >= maxBatchingDelay;

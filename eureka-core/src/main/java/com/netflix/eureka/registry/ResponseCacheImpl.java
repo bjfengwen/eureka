@@ -135,7 +135,7 @@ public class ResponseCacheImpl implements ResponseCache {
                         })
                         .build(new CacheLoader<Key, Value>() {
                             @Override
-                            public Value load(Key key) throws Exception {
+                            public Value load(Key key) throws Exception {//这里定义的是缓存中没有的情况该怎么办, load
                                 // // TODO[0009]：RemoteRegionRegistry
                                 if (key.hasRegions()) {
                                     Key cloneWithNoRegions = key.cloneWithoutRegions();

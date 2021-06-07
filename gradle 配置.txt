@@ -3,3 +3,5 @@ https://www.cnblogs.com/756623607-zhang/p/10534362.html
 http://www.maoshengchun.com/article-34.html
 
 https://blog.csdn.net/sino_crazy_snail/article/details/79300058
+
+使用gradle-3.1 版本
